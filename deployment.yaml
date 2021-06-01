@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec: 
+  replicas: 2
+  selector:
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: nikolakp/kub-data-demo:pvev
+          volumeMounts:
+            - name: story-volume
+              mountPath: /app/story
+          env:                        # CONFIGURE ENVIRONMENT VARIABLE
+            # - name: STORY_FOLDER  -> This is just for using simple Environment Variable not a Config Map
+            #   value: 'story'      -> This is just for using simple Environment Variable not a Config Map
+            - name: STORY_FOLDER
+              valueFrom:
+                configMapKeyRef:        # -> Configuration for Config Map
+                  name: data-store-env
+                  key: folder
+
+      volumes:
+        - name: story-volume
+          persistentVolumeClaim:
+            claimName: host-pvc
+         # hostPath: 
+          #  path: /data # path on the host machine
+          #  type: DirectoryOrCreate

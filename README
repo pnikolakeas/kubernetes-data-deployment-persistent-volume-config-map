@@ -1,0 +1,57 @@
+NodeJS REST API deployed on Kubernetes Cluster with the following capabilities:
+- Resource Replication
+- /error endpoint for Kubernetes auto-failover 
+- Persistent Volume and Claim
+- Config Maps for environment configuration. 
+
+-- prerequisites: Docker, DockerCompose, Minikube for Kubernetes cluster
+-- Running Docker service
+
+1. Start Minikube with docker driver: 
+> minikube start --driver=docker
+
+2. Open Minikube Dashboard:
+> minikube dashboard
+
+3. Run application Locally with Docker.
+docker build -t nikolakp/kub-data-demo:pv-cm .
+docker run -d --name kub-data-app -p 3000:3000 nikolakp/kub-data-demo:pv-cm
+
+OR by simply doing docker-compose up -d --build
+
+Verification: 
+RETRIEVAL: Browser get request to http://localhost:4200/story
+CREATION: POSTMAN post request to http://localhost:4200/story with JSON body 
+{
+    "text": "Any test!"
+}
+
+4. Push Image to Docker Hub registry (For the Kubernetes cluster to get it from there)
+docker push nikolakp/kub-data-demo:pv-cm
+
+5. Create host-pv.yaml for configuring the Persistent Volume
+5. Create host-pvc.yaml for configuring the Persistent Volume Claim
+5. Create environment.yaml for configuring the environmental variables on a Config Map
+5. Create deployment.yaml for making the deployment
+5. Create service.yaml for exposing the app to the outside of the cluster world 
+
+6. Apply the resources
+> kubectl apply -f host-pv.yaml -f host-pvc.yaml
+> kubectl apply -f environment.yaml
+> kubectl apply -f service.yaml -f deployment.yaml
+
+7. Expose the service we just created! 
+> minikube service story-service
+
+Command-line Verification: kubectl get deployments for deployments
+                           kubectl get services for services
+                           kubectl get pv for persistent volumes
+                           kubectl get pvc for persisent volume claims
+                           kubectl get cm for config maps
+
+Minikube Dashboard Verification: minikube dashboard                           
+
+At this stage the Kubernetes Cluster is configured with Persistent Volume and Persistent Volume Claim 
+and efficiently utilizes Environmental Variables provided by Config Maps.
+
+Final Verification through POSTMAN by using the endpoint of the exposed service.

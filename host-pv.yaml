@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: standard
+  hostPath: # By definition is defined on one Node ONLY (possible multiple PODs inside that Node though)
+    path: /data
+    type: DirectoryOrCreate
